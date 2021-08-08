@@ -20,7 +20,7 @@ describe('routes - movies', () => {
 
         it('Should respond with the list of movies', (done) => {
             request.get('/api/movies').end((err,res) => {
-                assert.deepEqual(res.body, {
+                assert.deepStrictEqual(res.body, {
                     data: moviesMock,
                     message: 'Movies listed'
                 });
