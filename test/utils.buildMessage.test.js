@@ -1,7 +1,7 @@
 const assert = require('assert');
 const buildMessage = require('../utils/buildMessage');
 
-describe.only('utils - buildMessage', () => { // .only for test one test
+describe('utils - buildMessage', () => { // .only for test one test
     describe('when receives an entity and an action', () => {
         it('Should return the respective message', () => {
             const result = buildMessage('movie', 'create');
