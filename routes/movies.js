@@ -1,4 +1,5 @@
 const express = require('express');
+const passport = require('passport');
 const MoviesService = require('../services/movies');
 const {
     movieIdSchema,
@@ -11,13 +12,15 @@ const validationHandler = require('../utils/middleware/validationHandler');
 const cacheResponse = require('../utils/cacheResponse');
 const { FIVE_MINUTES_IN_SECONDS, SIXTY_MINUTES_IN_SECONDS } = require('../utils/time')
 
+require('../utils/auth/strategies/jwt');
+
 const moviesApi = (app) => {
     const router = express.Router();
     app.use('/api/movies', router);
 
     const moviesService = new MoviesService();
 
-    router.get('/', async (req, res, next) => {
+    router.get('/', passport.authenticate('jwt',{ session: false }), async (req, res, next) => {
         cacheResponse(res, FIVE_MINUTES_IN_SECONDS);
         const { tags } = req.query;
         try {
@@ -32,7 +35,7 @@ const moviesApi = (app) => {
         }
     });
 
-    router.get('/:movieId', validationHandler({ movieId: movieIdSchema }, 'params'), async (req, res, next) => {
+    router.get('/:movieId', passport.authenticate('jwt',{ session: false }), validationHandler({ movieId: movieIdSchema }, 'params'), async (req, res, next) => {
         cacheResponse(res, SIXTY_MINUTES_IN_SECONDS);
         const { movieId } = req.params;
         try {
@@ -47,7 +50,7 @@ const moviesApi = (app) => {
         }
     });
 
-    router.post('/', validationHandler(createMovieSchema), async (req, res, next) => {
+    router.post('/', passport.authenticate('jwt',{ session: false }), validationHandler(createMovieSchema), async (req, res, next) => {
         const { body: movie } = req
         try {
             const createdMovieId = await moviesService.createMovie({ movie });
@@ -61,7 +64,7 @@ const moviesApi = (app) => {
         }
     });
 
-    router.put('/:movieId', validationHandler({ movieId: movieIdSchema }, 'params'), validationHandler(updateMovieSchema), async (req, res, next) => {
+    router.put('/:movieId', passport.authenticate('jwt',{ session: false }), validationHandler({ movieId: movieIdSchema }, 'params'), validationHandler(updateMovieSchema), async (req, res, next) => {
         const { movieId } = req.params;
         const { body: movie } = req
         try {
@@ -76,7 +79,7 @@ const moviesApi = (app) => {
         }
     });
 
-    router.delete('/:movieId', validationHandler({ movieId: movieIdSchema }, 'params'), async (req, res, next) => {
+    router.delete('/:movieId', passport.authenticate('jwt',{ session: false }), validationHandler({ movieId: movieIdSchema }, 'params'), async (req, res, next) => {
         const { movieId } = req.params;
         try {
             const deletedMovieId = await moviesService.deleteMovie({ movieId });
