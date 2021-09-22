@@ -68,7 +68,7 @@ const userMoviesApi = (app) => {
                     userMovieId
                 });
 
-                res.status(201).json({
+                res.status(200).json({
                     data: deletedUserMovieId,
                     message: 'user movie deleted'
                 });
